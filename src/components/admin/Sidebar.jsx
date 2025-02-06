@@ -1,5 +1,6 @@
 import { BookDashed, User } from "lucide-react";
 import { Link } from "react-router";
+import { sidbarLink } from "../../utils/links";
 
 const Sidebar = () => {
   return (
@@ -12,18 +13,21 @@ const Sidebar = () => {
       {/* /Profile */}
 
       {/* Navlink */}
-      <div className="flex-1 py-4">
-        <Link
-          className="flex items-center hover:bg-green-700 hover:duration-200
-          rounded-sm px-3 py-2 gap-2"
-          to={"/admin"}
-        >
-          <span className="text-xl">
-            <BookDashed />
-          </span>
-          Dashboard
-        </Link>
-      </div>
+      {sidbarLink.map((item) => {
+        return (
+          <div className="py-1 mx-2">
+            <Link
+              className="flex items-center hover:bg-green-700 hover:duration-200
+              rounded-sm px-3 py-1 gap-2"
+              to={item.link}
+            >
+              <span className="text-xl">{item.icon}</span>
+              {item.label}
+            </Link>
+          </div>
+        );
+      })}
+
       {/* /Navlink */}
     </div>
   );

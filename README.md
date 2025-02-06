@@ -1828,3 +1828,92 @@ const Sidebar = () => {
 };
 export default Sidebar;
 ```
+
+and then
+
+```jsx
+import { BookDashed, User } from "lucide-react";
+import { Link } from "react-router";
+
+const Sidebar = () => {
+  return (
+    <div className="bg-green-950 w-48 text-white">
+      {/* Profile */}
+      <div className="flex flex-col items-center gap-2 py-12">
+        <User fontSize={48} />
+        <span className="text-lg">Profile</span>
+      </div>
+      {/* /Profile */}
+
+      {/* Navlink */}
+      <div className="flex-1 py-4">
+        <Link
+          className="flex items-center hover:bg-green-700 hover:duration-200
+          rounded-sm px-3 py-2 gap-2"
+          to={"/admin"}
+        >
+          <span className="text-xl">
+            <BookDashed />
+          </span>
+          Dashboard
+        </Link>
+      </div>
+      {/* /Navlink */}
+    </div>
+  );
+};
+export default Sidebar;
+```
+
+### Separate Link menu
+
+utils/links.jsx
+
+```jsx
+import { BookDashed, User2Icon } from "lucide-react";
+
+export const sidbarLink = [
+  { label: "Dashboard", link: "/admin", icon: <BookDashed /> },
+  { label: "Manage", link: "/manage", icon: <User2Icon /> },
+];
+```
+
+and sidebar
+
+```jsx
+import { BookDashed, User } from "lucide-react";
+import { Link } from "react-router";
+import { sidbarLink } from "../../utils/links";
+
+const Sidebar = () => {
+  return (
+    <div className="bg-green-950 w-48 text-white">
+      {/* Profile */}
+      <div className="flex flex-col items-center gap-2 py-12">
+        <User fontSize={48} />
+        <span className="text-lg">Profile</span>
+      </div>
+      {/* /Profile */}
+
+      {/* Navlink */}
+      {sidbarLink.map((item) => {
+        return (
+          <div className="py-1 mx-2">
+            <Link
+              className="flex items-center hover:bg-green-700 hover:duration-200
+              rounded-sm px-3 py-1 gap-2"
+              to={item.link}
+            >
+              <span className="text-xl">{item.icon}</span>
+              {item.label}
+            </Link>
+          </div>
+        );
+      })}
+
+      {/* /Navlink */}
+    </div>
+  );
+};
+export default Sidebar;
+```
