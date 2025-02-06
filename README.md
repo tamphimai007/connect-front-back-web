@@ -1738,3 +1738,93 @@ const checkPermission = async () => {
   }
 };
 ```
+
+## Step 21 Layoute admin
+
+```jsx
+import { Outlet } from "react-router";
+import MainNav from "../components/MainNav";
+import Sidebar from "../components/admin/Sidebar";
+import Header from "../components/admin/Header";
+
+const LayoutAdmin = () => {
+  return (
+    <div>
+      <Sidebar />
+      <Header />
+      <Outlet />
+    </div>
+  );
+};
+export default LayoutAdmin;
+```
+
+and then
+
+```jsx
+import { Outlet } from "react-router";
+import MainNav from "../components/MainNav";
+import Sidebar from "../components/admin/Sidebar";
+import Header from "../components/admin/Header";
+
+const LayoutAdmin = () => {
+  return (
+    <div
+      className="flex bg-neutral-100 h-screen
+    w-screen overflow-hidden"
+    >
+      <Sidebar />
+      <div>
+        <Header />
+        <Outlet />
+      </div>
+    </div>
+  );
+};
+export default LayoutAdmin;
+```
+
+add color
+
+```jsx
+const Header = () => {
+  return <div className="bg-green-950 h-12">Header</div>;
+};
+export default Header;
+```
+
+and layout.jsx
+
+```jsx
+import { Outlet } from "react-router";
+import MainNav from "../components/MainNav";
+import Sidebar from "../components/admin/Sidebar";
+import Header from "../components/admin/Header";
+
+const LayoutAdmin = () => {
+  return (
+    <div
+      className="flex h-screen
+    w-screen"
+    >
+      <Sidebar />
+      <div className="flex flex-col flex-1">
+        <Header />
+        <div className="p-2 m-2 border flex-1 ">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+};
+export default LayoutAdmin;
+```
+
+and sidebar
+
+```jsx
+const Sidebar = () => {
+  return <div className="bg-green-950 w-48">Sidebar</div>;
+};
+export default Sidebar;
+```
