@@ -5,9 +5,7 @@ import Header from "../components/admin/Header";
 
 const LayoutAdmin = () => {
   return (
-    <div
-      className="flex h-screen w-screen"
-    >
+    <div className="flex h-screen w-screen">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
