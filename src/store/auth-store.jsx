@@ -1,13 +1,14 @@
 import axios from "axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { actionLogin } from "../api/auth";
+import { actionLogin } from "../../api/auth";
+
 const authStore = (set) => ({
   user: [],
   token: null,
   actionLogin_: async (value) => {
     try {
-      const res = await actionLogin(value)
+      const res = await actionLogin(value);
       //   console.log(res.data.result);
       //   console.log(res.data.result.role);
       //   console.log(res.data.token);
@@ -16,9 +17,12 @@ const authStore = (set) => ({
 
       return { success: true, role: result.role };
     } catch (error) {
-    //   console.log(error.response.data.message);
+      //   console.log(error.response.data.message);
       return { success: false, error: error.response.data.message };
     }
+  },
+  actionLogout: () => {
+    set({ user: [], token: null });
   },
 });
 

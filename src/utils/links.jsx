@@ -1,6 +1,6 @@
-import { BookDashed, User2Icon } from "lucide-react";
+import { CircleGauge, User2Icon } from "lucide-react";
 
 export const sidbarLink = [
-  { label: "Dashboard", link: "/admin", icon: <BookDashed /> },
-  { label: "Manage", link: "/manage", icon: <User2Icon /> },
+  { label: "Dashboard", link: "/admin", icon: <CircleGauge /> },
+  { label: "Manage", link: "/admin/manage", icon: <User2Icon /> },
 ];

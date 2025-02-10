@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { actionCurrentUser } from "../../api/auth";
-import useAuthStore from "../../store/auth-store";
+import useAuthStore from "../store/auth-store";
 
 const ProtectRoute = ({ el, allows }) => {
   const token = useAuthStore((state) => state.token);

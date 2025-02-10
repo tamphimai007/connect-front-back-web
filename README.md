@@ -1870,11 +1870,11 @@ export default Sidebar;
 utils/links.jsx
 
 ```jsx
-import { BookDashed, User2Icon } from "lucide-react";
+import { CircleGauge, User2Icon } from "lucide-react";
 
 export const sidbarLink = [
-  { label: "Dashboard", link: "/admin", icon: <BookDashed /> },
-  { label: "Manage", link: "/manage", icon: <User2Icon /> },
+  { label: "Dashboard", link: "/admin", icon: <CircleGauge /> },
+  { label: "Manage", link: "/admin/manage", icon: <User2Icon /> },
 ];
 ```
 
@@ -1916,4 +1916,619 @@ const Sidebar = () => {
   );
 };
 export default Sidebar;
+```
+
+### Update Sidebar
+
+/components/admin/Sidebar.jsx
+
+```jsx
+import { User } from "lucide-react";
+import { Link } from "react-router";
+import { sidbarLink } from "../../utils/links";
+import useAuthStore from "../../store/auth-store";
+
+const Sidebar = () => {
+  const user = useAuthStore((state) => state.user);
+  return (
+    <div className="bg-green-950 w-48 text-white">
+      {/* Profile */}
+      <div className="flex flex-col items-center gap-2 py-12">
+        <User size={48} />
+        <span className="text-lg">{user && user.email}</span>
+        <span className="text-sm">{user && user.role}</span>
+      </div>
+      {/* /Profile */}
+
+      {/* Navlink */}
+      {sidbarLink.map((item) => {
+        return (
+          <div className="py-1 mx-2">
+            <Link
+              className="flex items-center hover:bg-green-700 hover:duration-200
+              rounded-sm px-3 py-1 gap-2"
+              to={item.link}
+            >
+              <span className="text-xl">{item.icon}</span>
+              {item.label}
+            </Link>
+          </div>
+        );
+      })}
+
+      {/* /Navlink */}
+    </div>
+  );
+};
+export default Sidebar;
+```
+
+## Step 22 Logout
+
+store/
+
+```jsx
+import axios from "axios";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { actionLogin } from "../../api/auth";
+
+const authStore = (set) => ({
+  user: [],
+  token: null,
+  actionLogin_: async (value) => {
+    try {
+      const res = await actionLogin(value);
+      //   console.log(res.data.result);
+      //   console.log(res.data.result.role);
+      //   console.log(res.data.token);
+      const { result, token } = res.data;
+      set({ token: token, user: result });
+
+      return { success: true, role: result.role };
+    } catch (error) {
+      //   console.log(error.response.data.message);
+      return { success: false, error: error.response.data.message };
+    }
+  },
+  actionLogout: () => {
+    set({ user: [], token: null });
+  },
+});
+
+const useAuthStore = create(persist(authStore, { name: "auth-store" }));
+
+export default useAuthStore;
+```
+
+create components
+/components/Logout.jsx
+
+```jsx
+import { useNavigate } from "react-router";
+import useAuthStore from "../store/auth-store";
+import { createAlert } from "../utils/createAlert";
+const Logout = () => {
+  // JS
+  const navigate = useNavigate();
+  const actionLogout = useAuthStore((state) => state.actionLogout);
+
+  const hdlLogout = () => {
+    // code body
+    actionLogout();
+    createAlert("success", "Logout Success");
+
+    navigate("/login");
+  };
+  return (
+    <div>
+      <button className="hover:cursor-pointer" onClick={hdlLogout}>
+        Logout
+      </button>
+    </div>
+  );
+};
+export default Logout;
+```
+
+and update Header.jsx
+
+```jsx
+import Logout from "../Logout";
+
+const Header = () => {
+  return (
+    <div
+      className="bg-green-950 h-12 flex 
+    items-center text-white justify-end px-4"
+    >
+      <Logout />
+    </div>
+  );
+};
+export default Header;
+```
+
+## Step 23 Manage User
+
+```jsx
+const Manage = () => {
+  // JS
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Song</th>
+            <th>Artist</th>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+            <td>Malcolm Lockyer</td>
+            <td>1961</td>
+          </tr>
+          <tr>
+            <td>Witchy Woman</td>
+            <td>The Eagles</td>
+            <td>1972</td>
+          </tr>
+          <tr>
+            <td>Shining Star</td>
+            <td>Earth, Wind, and Fire</td>
+            <td>1975</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+export default Manage;
+```
+
+/api/user.jsx
+
+```jsx
+import axios from "axios";
+
+export const actionListUsers = () => {
+  return axios.get("http://localhost:8000/api/users");
+};
+```
+
+update this code in
+/pages/admin/Manage.jsx
+
+```jsx
+import { useEffect } from "react";
+import { actionListUsers } from "../../../api/user";
+
+const Manage = () => {
+  // JS
+
+  useEffect(() => {
+    // code
+    hdlFetchUsers();
+  }, []);
+
+  const hdlFetchUsers = async () => {
+    try {
+      const res = await actionListUsers();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Song</th>
+            <th>Artist</th>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+            <td>Malcolm Lockyer</td>
+            <td>1961</td>
+          </tr>
+          <tr>
+            <td>Witchy Woman</td>
+            <td>The Eagles</td>
+            <td>1972</td>
+          </tr>
+          <tr>
+            <td>Shining Star</td>
+            <td>Earth, Wind, and Fire</td>
+            <td>1975</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+export default Manage;
+```
+
+missing token
+
+and then
+
+Manage.jsx
+
+```jsx
+import { useEffect } from "react";
+import { actionListUsers } from "../../../api/user";
+import useAuthStore from "../../store/auth-store";
+
+const Manage = () => {
+  // JS
+  const token = useAuthStore((state) => state.token);
+  useEffect(() => {
+    // code
+    hdlFetchUsers(token);
+  }, []);
+
+  const hdlFetchUsers = async (token) => {
+    try {
+      const res = await actionListUsers(token);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Song</th>
+            <th>Artist</th>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+            <td>Malcolm Lockyer</td>
+            <td>1961</td>
+          </tr>
+          <tr>
+            <td>Witchy Woman</td>
+            <td>The Eagles</td>
+            <td>1972</td>
+          </tr>
+          <tr>
+            <td>Shining Star</td>
+            <td>Earth, Wind, and Fire</td>
+            <td>1975</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+export default Manage;
+```
+
+and
+/api/user.jsx
+
+```jsx
+import axios from "axios";
+
+export const actionListUsers = (token) => {
+  return axios.get("http://localhost:8000/api/users", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+```
+
+and then
+Manage.jsx
+
+```jsx
+import { useEffect, useState } from "react";
+import { actionListUsers } from "../../../api/user";
+import useAuthStore from "../../store/auth-store";
+import { Delete, DeleteIcon, Trash2 } from "lucide-react";
+
+const Manage = () => {
+  // JS
+  const [users, setUsers] = useState([]);
+  const token = useAuthStore((state) => state.token);
+
+  useEffect(() => {
+    // code
+    hdlFetchUsers(token);
+  }, []);
+
+  const hdlFetchUsers = async (token) => {
+    try {
+      const res = await actionListUsers(token);
+      setUsers(res.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, index) => {
+            return (
+              <tr key={user.id}>
+                <td>{index + 1}</td>
+                <td>{user.firstname}</td>
+                <td>{user.lastname}</td>
+                <td>{user.email}</td>
+                <td>{user.role}</td>
+                <td>
+                  <Trash2 color="red" />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+export default Manage;
+```
+
+## Step 24 Update role
+
+and update Role
+/api/user.jsx
+
+```jsx
+export const actionUpdateRole = (token, value) => {
+  return axios.patch("http://localhost:8000/api/user/update-role", value, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+```
+
+and then
+
+/admin/Manage.jsx
+
+```jsx
+import { useEffect, useState } from "react";
+import { actionListUsers, actionUpdateRole } from "../../../api/user";
+import useAuthStore from "../../store/auth-store";
+import { Delete, DeleteIcon, Trash2 } from "lucide-react";
+import { createAlert } from "../../utils/createAlert";
+
+const Manage = () => {
+  // JS
+  const [users, setUsers] = useState([]);
+  const token = useAuthStore((state) => state.token);
+
+  useEffect(() => {
+    // code
+    hdlFetchUsers(token);
+  }, []);
+
+  const hdlFetchUsers = async (token) => {
+    try {
+      const res = await actionListUsers(token);
+      setUsers(res.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const hdlUpdateRole = async (token, id, role) => {
+    console.log(token, id, role);
+    try {
+      const res = await actionUpdateRole(token, { id, role });
+      console.log(res);
+      createAlert("success", res.data.message);
+      hdlFetchUsers(token);
+    } catch (error) {
+      console.log(error);
+      createAlert("success", error.response.data.message);
+    }
+  };
+
+  // console.log(users);
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, index) => {
+            return (
+              <tr key={user.id}>
+                <td>{index + 1}</td>
+                <td>{user.firstname}</td>
+                <td>{user.lastname}</td>
+                <td>{user.email}</td>
+                <td>
+                  <select
+                    defaultValue={user.role}
+                    onChange={(e) =>
+                      hdlUpdateRole(token, user.id, e.target.value)
+                    }
+                  >
+                    <option>USER</option>
+                    <option>ADMIN</option>
+                  </select>
+                </td>
+                <td>
+                  <Trash2 color="red" />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+export default Manage;
+```
+
+## Step 25 Delete User
+
+/api/user.jsx
+
+```jsx
+export const actionDeleteUser = (token, id) => {
+  return axios.delete("http://localhost:8000/api/user/" + id, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+```
+
+and then
+Manage.jsx
+
+```jsx
+import { useEffect, useState } from "react";
+import {
+  actionDeleteUser,
+  actionListUsers,
+  actionUpdateRole,
+} from "../../../api/user";
+import useAuthStore from "../../store/auth-store";
+import { Delete, DeleteIcon, Trash2 } from "lucide-react";
+import { createAlert } from "../../utils/createAlert";
+import Swal from "sweetalert2";
+
+const Manage = () => {
+  // JS
+  const [users, setUsers] = useState([]);
+  const token = useAuthStore((state) => state.token);
+
+  useEffect(() => {
+    // code
+    hdlFetchUsers(token);
+  }, []);
+
+  const hdlFetchUsers = async (token) => {
+    try {
+      const res = await actionListUsers(token);
+      setUsers(res.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const hdlUpdateRole = async (token, id, role) => {
+    console.log(token, id, role);
+    try {
+      const res = await actionUpdateRole(token, { id, role });
+      console.log(res);
+      createAlert("success", res.data.message);
+      hdlFetchUsers(token);
+    } catch (error) {
+      console.log(error);
+      createAlert("success", error.response.data.message);
+    }
+  };
+  const hdlDeleteUser = async (token, id) => {
+    try {
+      console.log(id);
+      Swal.fire({
+        icon: "info",
+        text: "Are you Sure?",
+        showCloseButton: true,
+        showCancelButton: true,
+      }).then(async (data) => {
+        // console.log(data.isConfirmed);
+        if (data.isConfirmed) {
+          const res = await actionDeleteUser(token, id);
+          console.log(res);
+          createAlert("success", res.data.message);
+          hdlFetchUsers(token);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // console.log(users);
+  return (
+    <div>
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, index) => {
+            return (
+              <tr key={user.id}>
+                <td>{index + 1}</td>
+                <td>{user.firstname}</td>
+                <td>{user.lastname}</td>
+                <td>{user.email}</td>
+                <td>
+                  <select
+                    defaultValue={user.role}
+                    onChange={(e) =>
+                      hdlUpdateRole(token, user.id, e.target.value)
+                    }
+                  >
+                    <option>USER</option>
+                    <option>ADMIN</option>
+                  </select>
+                </td>
+                <td>
+                  <Trash2
+                    color="red"
+                    onClick={() => hdlDeleteUser(token, user.id)}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+export default Manage;
 ```

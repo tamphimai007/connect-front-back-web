@@ -7,7 +7,7 @@ import { useNavigate } from "react-router";
 import { actionLogin } from "../../../api/auth";
 import { loginSchema } from "../../utils/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useAuthStore from "../../../store/auth-store";
+import useAuthStore from "../../store/auth-store";
 
 const Login = () => {
   // Zustand
